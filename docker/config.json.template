@@ -1,0 +1,30 @@
+[
+  {
+    "key": "BACKEND_HOST",
+    "value": ""
+  },
+  {
+    "key": "CMS_HOST",
+    "value": ""
+  },
+  {
+    "key": "NO_CACHING",
+    "value": ""
+  },
+  {
+    "key": "BERESP_TTL",
+    "value": ""
+  },
+  {
+    "key": "BERESP_GRACE",
+    "value": ""
+  },
+  {
+    "key": "BERESP_KEEP",
+    "value": ""
+  },
+  {
+    "key": "VARNISH_SIZE",
+    "value": ""
+  }
+]
