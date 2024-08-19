@@ -40,9 +40,17 @@ sub vcl_backend_response {
   if (std.getenv("NO_CACHING") == "true") {
     set beresp.uncacheable = true;
     set beresp.ttl = 15m;
-  } else {
+  } elseif (beresp.status >= 200 && beresp.status < 300) {
     set beresp.ttl = std.duration(std.getenv("BERESP_TTL"), 1m);
     set beresp.grace = std.duration(std.getenv("BERESP_GRACE"), 1m);
     set beresp.keep = std.duration(std.getenv("BERESP_KEEP"), 1m);
+  } elseif (beresp.status == 408 || beresp.status == 504) {
+    // for timeout
+    set beresp.ttl = 5m;
+    set beresp.grace = 10m;
+    set beresp.keep = 5m;
+  } else {
+    set beresp.uncacheable = true;
+    set beresp.ttl = 15m;
   }
 }
