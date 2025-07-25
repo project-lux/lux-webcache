@@ -6,13 +6,12 @@ CONTAINER=${DOCKER_CONTAINER_NAME:-lux-web-cache}
 PORT=${PORT:-8080}
 
 HOST_VCL=${HOST_VCL:-default.vcl}
-HOST_CONFIG=${HOST_CONFIG:-docker/.config.json}
+HOST_CONFIG=${HOST_CONFIG:-docker/config.json}
 
 VOLUMES="\
 -v $(pwd)/${HOST_CONFIG}:/app/config.json \
 "
 ENVS="\
--e VARNISH_SIZE=${VARNISH_SIZE:-1G} \
 -e USE_LOCAL_CONFIG_JSON=yes \
 "
 

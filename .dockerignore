@@ -2,8 +2,7 @@
 /**/.DS_Store
 
 /**/.git
-/**/node_modules
 
-/server/.config*.json
+/server/config*.json
 /server/.env*
 /server/public

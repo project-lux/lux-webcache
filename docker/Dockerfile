@@ -11,17 +11,21 @@ RUN apt-get update && \
   unzip awscliv2.zip && \
   ./aws/install && \
   rm -rf ./aws && \
-  rm awscliv2.zip
-
-COPY docker/nginx-sources.list /etc/apt/sources.list
-
-RUN wget https://nginx.org/keys/nginx_signing.key && \
-  apt-key add ./nginx_signing.key && \
-  apt-get update && \
+  rm awscliv2.zip && \
   apt-get install -y nginx && \
   apt-get remove -y wget unzip gnupg && \
   apt-get autoremove -y && \
   rm -rf /var/lib/apt/lists/*
+
+# COPY docker/nginx-sources.list /etc/apt/sources.list
+
+# RUN wget https://nginx.org/keys/nginx_signing.key && \
+#   apt-key add ./nginx_signing.key && \
+#   apt-get update && \
+#   apt-get install -y nginx && \
+#   apt-get remove -y wget unzip gnupg && \
+#   apt-get autoremove -y && \
+#   rm -rf /var/lib/apt/lists/*
 
 # ENV PKG_CONFIG_PATH /usr/lib/x86_64-linux-gnu/pkgconfig
 
