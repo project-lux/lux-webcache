@@ -19,12 +19,23 @@ sub vcl_recv {
   set req.http.Cookie-Backup = req.http.Cookie;
   unset req.http.Cookie;
 
-  if (req.url ~ "^/api/_info") {
-    return (pass);
+  if (
+    req.url ~ "^/api/_info" ||
+    req.url ~ "^/api/version-info" ||
+    req.url ~ "^/api/tenant-status" ||
+    req.url ~ "sort=random"
+  ) {
+    return (pass); // do not cache
   }
 
-  if (req.url ~ "sort=random") {
-    return (pass);
+  if (req.http.Authorization) {
+    if (req.url ~ "^/api/advanced-search-config") {
+      # Allow caching
+      return (hash);
+    } else {
+      # Don't cache other authenticated requests
+      return (pass);
+    }
   }
 }
 
