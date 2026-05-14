@@ -1,0 +1,58 @@
+name: Docker Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: 'Target environment for deployment'
+        required: true
+        default: 'DEV'
+        type: choice
+        options:
+          - BLUE
+          - GREEN
+          - DEV
+          - POLLUX-BLUE
+          - POLLUX-GREEN
+jobs:
+  deploy:
+    runs-on: [self-hosted, X64]
+    environment:
+      name: ${{ inputs.target_env }}
+    env:
+      ECR_URI: "${{ vars.ECR_HOST }}/${{ vars.DOCKER_IMAGE_NAME }}"
+      MIN_PERC: 100 # minumum healthy percent
+      TIMEOUT: 300 # deployment timeout in seconds
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID_CDS2_DEVTOOLS_DEV }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_CDS2_DEVTOOLS_DEV }}
+    steps:
+      - name: Pack environment variables
+        run: |
+          echo "VERSION=${{ vars.TAG_TO_DEPLOY }}" > _env
+          echo "BACKEND_HOST=${{ vars.BACKEND_HOST }}" >> _env
+          echo "CMS_HOST=${{ vars.CMS_HOST }}" >> _env
+          echo "NO_CACHING=${{ vars.NO_CACHING }}" >> _env
+          echo "BERESP_TTL=${{ vars.BERESP_TTL }}" >> _env
+          echo "BERESP_GRACE=${{ vars.BERESP_GRACE }}" >> _env
+          echo "BERESP_KEEP=${{ vars.BERESP_KEEP }}" >> _env
+          echo "VARNISH_SIZE=${{ vars.VARNISH_SIZE }}" >> _env
+          echo "LOG_LEVEL=${{ vars.LOG_LEVEL }}" >> _env
+          set -x
+          env-to-json.py _env config.json
+      - name: Deploy Docker Image
+        run: |
+          echo "Deploying ${{ vars.TAG_TO_DEPLOY }}"
+          set -x
+          aws kms encrypt --region us-east-1 --key-id ${{ vars.CDS2_KMS_KEY_ID_DEV }} \
+            --plaintext fileb://config.json --query CiphertextBlob --output text | base64 --decode \
+            > config.encrypted
+          aws s3 cp config.encrypted ${{ vars.CONFIG_STORE_S3 }}/config.encrypted
+          aws kms encrypt --region us-east-1 --key-id ${{ vars.CDS2_KMS_KEY_ID_DEV }} \
+            --plaintext fileb://${KEY_DIR}/${{ vars.GOOGLE_APPLICATION_CREDENTIALS }} --query CiphertextBlob --output text | base64 --decode \
+            > gac.encrypted
+          aws s3 cp gac.encrypted ${{ vars.CONFIG_STORE_S3 }}/gac.encrypted
+          rm -f _env config.json config.encrypted gac.encrypted
+          ecs-deploy --use-latest-task-def -r us-east-1 \
+            -t ${{ env.TIMEOUT }} -m ${{ env.MIN_PERC }} \
+            -c ${{ vars.ECS_CLUSTER }} -n ${{ vars.ECS_SERVICE }} \
+            -i ${{ env.ECR_URI }}:${{ vars.TAG_TO_DEPLOY }}
