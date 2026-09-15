@@ -7,4 +7,4 @@ IMAGE_NAME=${IMAGE_NAME:-lux-web-cache}
 
 export DOCKER_BUILDKIT=1
 
-docker buildx build -t $IMAGE_NAME -f docker/Dockerfile .
+docker buildx build --platform linux/amd64 -t $IMAGE_NAME -f docker/Dockerfile .

@@ -26,5 +26,9 @@
   {
     "key": "VARNISH_SIZE",
     "value": ""
+  },
+  {
+    "key": "TRANSIENT_MEMORY_CAP",
+    "value": ""
   }
 ]

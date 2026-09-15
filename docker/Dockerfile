@@ -1,5 +1,5 @@
-# 6.0.10: FROM debian:bullseye-slim
-FROM varnish:6.0.13
+# 6.0.18: FROM debian:bookworm-slim
+FROM varnish:6.0.18
 
 RUN mkdir /build /app
 WORKDIR /build
