@@ -35,7 +35,10 @@ cat ./env
 
 . ./env
 
-export NAMESERVER=`cat /etc/resolv.conf | grep "nameserver" | awk '{print $2}' | tr '\n' ' '`
+if [ -z "${NAMESERVER:-}" ]; then
+  export NAMESERVER=`cat /etc/resolv.conf | grep "nameserver" | awk '{print $2}' | tr '\n' ' '`
+fi
+echo "NAMESERVER: ${NAMESERVER}"
 
 sed -i 's@_BACKEND_HOST_@'"$BACKEND_HOST"'@' /etc/nginx/sites-enabled/default
 sed -i 's@_CMS_HOST_@'"$CMS_HOST"'@' /etc/nginx/sites-enabled/default
@@ -55,6 +58,7 @@ echo "BERESP_TTL: ${BERESP_TTL}"
 echo "BERESP_GRACE: ${BERESP_GRACE}"
 echo "BERESP_KEEP: ${BERESP_KEEP}"
 echo "VARNISH_SIZE: ${VARNISH_SIZE}"
+echo "TRANSIENT_MEMORY_CAP: ${TRANSIENT_MEMORY_CAP}"
 echo "nameserver: ${NAMESERVER}"
 nginx -v
 

@@ -1,5 +1,4 @@
 name: Docker Deploy
-
 on:
   workflow_dispatch:
     inputs:
@@ -36,6 +35,7 @@ jobs:
           echo "BERESP_GRACE=${{ vars.BERESP_GRACE }}" >> _env
           echo "BERESP_KEEP=${{ vars.BERESP_KEEP }}" >> _env
           echo "VARNISH_SIZE=${{ vars.VARNISH_SIZE }}" >> _env
+          echo "TRANSIENT_MEMORY_CAP=${{ vars.TRANSIENT_MEMORY_CAP }}" >> _env
           echo "LOG_LEVEL=${{ vars.LOG_LEVEL }}" >> _env
           set -x
           env-to-json.py _env config.json
@@ -47,11 +47,7 @@ jobs:
             --plaintext fileb://config.json --query CiphertextBlob --output text | base64 --decode \
             > config.encrypted
           aws s3 cp config.encrypted ${{ vars.CONFIG_STORE_S3 }}/config.encrypted
-          aws kms encrypt --region us-east-1 --key-id ${{ vars.CDS2_KMS_KEY_ID_DEV }} \
-            --plaintext fileb://${KEY_DIR}/${{ vars.GOOGLE_APPLICATION_CREDENTIALS }} --query CiphertextBlob --output text | base64 --decode \
-            > gac.encrypted
-          aws s3 cp gac.encrypted ${{ vars.CONFIG_STORE_S3 }}/gac.encrypted
-          rm -f _env config.json config.encrypted gac.encrypted
+          rm -f _env config.json config.encrypted
           ecs-deploy --use-latest-task-def -r us-east-1 \
             -t ${{ env.TIMEOUT }} -m ${{ env.MIN_PERC }} \
             -c ${{ vars.ECS_CLUSTER }} -n ${{ vars.ECS_SERVICE }} \

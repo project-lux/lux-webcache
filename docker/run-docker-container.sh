@@ -13,6 +13,7 @@ VOLUMES="\
 "
 ENVS="\
 -e USE_LOCAL_CONFIG_JSON=yes \
+-e NAMESERVER=${NAMESERVER:-}
 "
 
 set -x
