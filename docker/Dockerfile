@@ -12,7 +12,7 @@ RUN apt-get update && \
   ./aws/install && \
   rm -rf ./aws && \
   rm awscliv2.zip && \
-  apt-get install -y nginx && \
+  apt-get install -y nginx logrotate && \
   apt-get remove -y wget unzip gnupg && \
   apt-get autoremove -y && \
   rm -rf /var/lib/apt/lists/*
@@ -33,6 +33,7 @@ COPY src/varnish/default.vcl /etc/varnish
 COPY src/varnish/docker-varnish-entrypoint /usr/local/bin/
 COPY src/nginx/nginx.conf /etc/nginx/
 COPY src/nginx/site-default /etc/nginx/sites-enabled/default
+COPY src/nginx/logrotate-nginx /etc/logrotate.d/nginx
 COPY docker/import-config-start.sh /app
 
 WORKDIR /app

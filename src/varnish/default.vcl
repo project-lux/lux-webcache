@@ -20,10 +20,11 @@ sub vcl_recv {
   unset req.http.Cookie;
 
   if (
-    req.url ~ "^/api/_info" ||
-    req.url ~ "^/api/version-info" ||
-    req.url ~ "^/api/tenant-status" ||
-    req.url ~ "sort=random"
+    req.url ~ "^/api/_info(/|\?|$)" ||
+    req.url ~ "^/api/version-info(/|\?|$)" ||
+    req.url ~ "^/api/tenant-status(/|\?|$)" ||
+    req.url ~ "[?&]sort=random(&|$)" ||
+    req.url ~ "[?&]no-cache(=|&|$)"
   ) {
     return (pass); // do not cache
   }
