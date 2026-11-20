@@ -1,2 +1,3 @@
-deb https://nginx.org/packages/debian/ bullseye nginx
-deb-src https://nginx.org/packages/debian/ bullseye nginx
+# nginx.org "stable" branch for Debian trixie (base of varnish:9.x images).
+# For the "mainline" branch use https://nginx.org/packages/mainline/debian instead.
+deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian trixie nginx

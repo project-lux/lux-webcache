@@ -1,0 +1,5 @@
+# Prefer nginx.org packages over Debian's own nginx package.
+Package: *
+Pin: origin nginx.org
+Pin: release o=nginx
+Pin-Priority: 900
